@@ -12,9 +12,9 @@ var clientInstance *mongo.Client
 var clientInstanceError error
 var mongoOnce sync.Once
 
-func GetClient() (*mongo.Client, error) {
+func GetClient(uri string) (*mongo.Client, error) {
 	mongoOnce.Do(func() {
-		clientOptions := options.Client().ApplyURI("mongodb:mongo:27017")
+		clientOptions := options.Client().ApplyURI(uri)
 
 		client, err := mongo.Connect(context.TODO(), clientOptions)
 
