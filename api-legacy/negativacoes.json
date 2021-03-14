@@ -1,0 +1,49 @@
+{
+  "negativations": [
+    {
+      "companyDocument": "59291534000167",
+      "companyName": "ABC S.A.",
+      "customerDocument": "51537476467",
+      "value": 1235.23,
+      "contract": "bc063153-fb9e-4334-9a6c-0d069a42065b",
+      "debtDate": "2015-11-13T20:32:51-03:00",
+      "inclusionDate": "2020-11-13T20:32:51-03:00"
+    },
+    {
+      "companyDocument": "77723018000146",
+      "companyName": "123 S.A.",
+      "customerDocument": "51537476467",
+      "value": 400.00,
+      "contract": "5f206825-3cfe-412f-8302-cc1b24a179b0",
+      "debtDate": "2015-10-12T20:32:51-03:00",
+      "inclusionDate": "2020-10-12T20:32:51-03:00"
+    },
+    {
+      "companyDocument": "04843574000182",
+      "companyName": "DBZ S.A.",
+      "customerDocument": "26658236674",
+      "value": 59.99,
+      "contract": "3132f136-3889-4efb-bf92-e1efbb3fe15e",
+      "debtDate": "2015-09-11T20:32:51-03:00",
+      "inclusionDate": "2020-09-11T20:32:51-03:00"
+    },
+    {
+      "companyDocument": "23993551000107",
+      "companyName": "XPTO S.A.",
+      "customerDocument": "62824334010",
+      "value": 230.50,
+      "contract": "8b441dbb-3bb4-4fc9-9b46-bdaad00a7a98",
+      "debtDate": "2015-08-10T20:32:51-03:00",
+      "inclusionDate": "2020-08-10T20:32:51-03:00"
+    },
+    {
+      "companyDocument": "70170935000100",
+      "companyName": "ASD S.A.",
+      "customerDocument": "25124543043",
+      "value": 10340.67,
+      "contract": "d6628a0e-d4dd-4f14-8591-2ddc7f1bbeff",
+      "debtDate": "2015-07-09T20:32:51-03:00",
+      "inclusionDate": "2020-07-09T20:32:51-03:00"
+    }
+  ]
+}
