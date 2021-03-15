@@ -49,9 +49,9 @@ func (n *negativationHandler) Fetch(c *gin.Context) {
 
 	err = n.repo.InsertMany(results)
 
-	if err != nil {
+	if mongo.IsDuplicateKeyError(err) {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to fetch legacy API data",
+			"error": "Legacy API data already fetched",
 		})
 		return
 	}
@@ -107,6 +107,30 @@ func (n *negativationHandler) Get(c *gin.Context) {
 	})
 }
 
+func (n *negativationHandler) GetByID(c *gin.Context) {
+	id := c.Param("id")
+
+	result, err := n.repo.GetByID(id)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "negativation not found",
+			})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "internal server error",
+			})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
+	})
+}
+
 func (n *negativationHandler) Create(c *gin.Context) {
 	var negativation = di.Negativation{}
 
@@ -131,26 +155,19 @@ func (n *negativationHandler) Create(c *gin.Context) {
 }
 
 func (n *negativationHandler) Update(c *gin.Context) {
-	customerDocument := c.Param("customerDocument")
+	id := c.Param("id")
 	var update = di.Negativation{}
 
 	c.Bind(&update)
 
-	if customerDocument == "" {
+	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid customer document",
 		})
 		return
 	}
 
-	result, _ := n.repo.GetOne(customerDocument)
-
-	if result.ID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "negativation do not exists",
-		})
-		return
-	}
+	result, _ := n.repo.GetByID(id)
 
 	err := n.repo.Update(result, update)
 
@@ -161,9 +178,22 @@ func (n *negativationHandler) Update(c *gin.Context) {
 		return
 	}
 
-	result, _ = n.repo.GetOne(update.CustomerDocument)
-
 	c.JSON(http.StatusOK, gin.H{
-		"data": result,
+		"data": update,
 	})
+}
+
+func (n *negativationHandler) Delete(c *gin.Context) {
+	id := c.Param("id")
+
+	err := n.repo.Delete(id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error",
+		})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, gin.H{})
 }

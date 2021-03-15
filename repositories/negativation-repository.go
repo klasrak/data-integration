@@ -17,7 +17,8 @@ type NegativationRepository interface {
 	Update(n, newN di.Negativation) error
 	Delete(customerDocument string) error
 
-	GetOne(customerDocument string) (di.Negativation, error)
+	GetOne(customerDocument string) ([]di.Negativation, error)
+	GetByID(id string) (di.Negativation, error)
 	GetAll() ([]di.Negativation, error)
 }
 
@@ -58,17 +59,10 @@ func (nr *negativationRepository) InsertMany(nList []di.Negativation) error {
 	insertableList := make([]interface{}, len(nList))
 
 	for i, v := range nList {
-		r, _ := nr.GetOne(v.CustomerDocument)
-		if r.ID == "" {
-			insertableList[i] = v
-		}
+		insertableList[i] = v
 	}
 
-	if insertableList[0] == nil {
-		return nil
-	}
-
-	_, err := nr.collection.InsertMany(context.TODO(), insertableList)
+	_, err := nr.collection.InsertMany(context.TODO(), insertableList, &options.InsertManyOptions{Ordered: func() *bool { b := false; return &b }()})
 
 	if err != nil {
 		return err
@@ -102,10 +96,16 @@ func (nr *negativationRepository) Update(n, newN di.Negativation) error {
 	return nil
 }
 
-func (nr *negativationRepository) Delete(customerDocument string) error {
-	filter := bson.D{primitive.E{Key: "customerDocument", Value: customerDocument}}
+func (nr *negativationRepository) Delete(id string) error {
+	objectId, err := primitive.ObjectIDFromHex(id)
 
-	_, err := nr.collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.D{primitive.E{Key: "_id", Value: objectId}}
+
+	_, err = nr.collection.DeleteOne(context.TODO(), filter)
 
 	if err != nil {
 		return err
@@ -114,12 +114,49 @@ func (nr *negativationRepository) Delete(customerDocument string) error {
 	return nil
 }
 
-func (nr *negativationRepository) GetOne(customerDocument string) (di.Negativation, error) {
-	result := di.Negativation{}
+func (nr *negativationRepository) GetOne(customerDocument string) ([]di.Negativation, error) {
+	results := []di.Negativation{}
 
 	filter := bson.D{primitive.E{Key: "customerDocument", Value: customerDocument}}
 
-	err := nr.collection.FindOne(context.TODO(), filter).Decode(&result)
+	cur, err := nr.collection.Find(context.TODO(), filter)
+
+	if err != nil {
+		return results, err
+	}
+
+	for cur.Next(context.TODO()) {
+		t := di.Negativation{}
+		err := cur.Decode(&t)
+
+		if err != nil {
+			return results, err
+		}
+
+		results = append(results, t)
+	}
+
+	cur.Close(context.TODO())
+
+	if len(results) == 0 {
+		return results, mongo.ErrNoDocuments
+	}
+
+	return results, nil
+}
+
+func (nr *negativationRepository) GetByID(id string) (di.Negativation, error) {
+	result := di.Negativation{}
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return result, err
+	}
+
+	filter := bson.D{primitive.E{Key: "_id", Value: objectId}}
+
+	err = nr.collection.FindOne(context.TODO(), filter).Decode(&result)
 
 	if err != nil {
 		return result, err

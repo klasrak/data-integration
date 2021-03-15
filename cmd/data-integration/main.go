@@ -41,8 +41,10 @@ func main() {
 			v1.GET("/fetch", negativationHandler.Fetch)
 			v1.GET("/get", negativationHandler.GetAll)
 			v1.GET("/get/:customerDocument", negativationHandler.Get)
+			v1.GET("/get-id/:id", negativationHandler.GetByID)
 			v1.POST("/create", negativationHandler.Create)
-			v1.PUT("/update/:customerDocument", negativationHandler.Update)
+			v1.PUT("/update/:id", negativationHandler.Update)
+			v1.DELETE("delete/:id", negativationHandler.Delete)
 		}
 	}
 
