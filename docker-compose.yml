@@ -30,6 +30,10 @@ services:
     ports:
       - "8080:8080"
     restart: always
+    environment: 
+      - MONGO_URI=mongodb://mongo:27017
+      - JWT_SECRET=s3cr3ts4uc3
+      - ENCRYPT_SECRET=sup3rs3cr3t
     volumes:
       - .:/usr/src/data-integration
     depends_on:
