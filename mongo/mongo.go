@@ -2,34 +2,40 @@ package mongo
 
 import (
 	"context"
-	"sync"
+	"log"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-var clientInstance *mongo.Client
-var clientInstanceError error
-var mongoOnce sync.Once
-
 func GetClient(uri string) (*mongo.Client, error) {
-	mongoOnce.Do(func() {
-		clientOptions := options.Client().ApplyURI(uri)
+	// Database Config
+	clientOptions := options.Client().ApplyURI(uri)
+	client, err := mongo.NewClient(clientOptions)
 
-		client, err := mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		panic(err.Error())
+	}
 
-		if err != nil {
-			clientInstanceError = err
-		}
+	//Set up a context required by mongo.Connect
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
 
-		err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		panic(err)
+	}
 
-		if err != nil {
-			clientInstanceError = err
-		}
+	//To close the connection at the end
+	defer cancel()
 
-		clientInstance = client
-	})
+	err = client.Ping(context.Background(), readpref.Primary())
+	if err != nil {
+		log.Fatal("Couldn't connect to the database", err)
+	} else {
+		log.Println("Connected!")
+	}
 
-	return clientInstance, clientInstanceError
+	return client, err
 }
