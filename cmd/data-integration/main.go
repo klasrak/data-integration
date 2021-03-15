@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/klasrak/data-integration/api/handlers"
+	"github.com/klasrak/data-integration/api/routes"
 	"github.com/klasrak/data-integration/config"
 	"github.com/klasrak/data-integration/mongo"
 	"github.com/klasrak/data-integration/repositories"
@@ -23,10 +24,10 @@ func main() {
 		log.Fatal("Failed to connect to mongodb")
 	}
 
+	router := gin.Default()
+
 	negativationRepository := repositories.NewNegativationRepository(mongoClient)
 	negativationHandler := handlers.NewNegativationHandler(negativationRepository)
-
-	router := gin.Default()
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -34,17 +35,11 @@ func main() {
 		})
 	})
 
-	api := router.Group("/api")
+	api := router.Group("api/")
 	{
 		v1 := api.Group("/v1")
 		{
-			v1.GET("/fetch", negativationHandler.Fetch)
-			v1.GET("/get", negativationHandler.GetAll)
-			v1.GET("/get/:customerDocument", negativationHandler.Get)
-			v1.GET("/get-id/:id", negativationHandler.GetByID)
-			v1.POST("/create", negativationHandler.Create)
-			v1.PATCH("/update/:id", negativationHandler.Update)
-			v1.DELETE("delete/:id", negativationHandler.Delete)
+			routes.NegativationRoutes(v1, negativationHandler)
 		}
 	}
 
