@@ -5,11 +5,11 @@ import "time"
 // Negativation represents Navigation domain type
 type Negativation struct {
 	ID               string    `json:"id,omitempty" bson:"_id,omitempty"`
-	CompanyDocument  string    `json:"companyDocument" bson:"companyDocument"`
-	CompanyName      string    `json:"companyName" bson:"companyName"`
-	CustomerDocument string    `json:"customerDocument" bson:"customerDocument"`
-	Value            float64   `json:"value" bson:"value"`
+	CompanyDocument  string    `json:"companyDocument,omitempty" bson:"companyDocument,omitempty"`
+	CompanyName      string    `json:"companyName,omitempty" bson:"companyName,omitempty"`
+	CustomerDocument string    `json:"customerDocument,omitempty" bson:"customerDocument,omitempty"`
+	Value            float64   `json:"value,omitempty" bson:"value,omitempty"`
 	Contract         string    `json:"contract" bson:"contract"`
-	DebtDate         time.Time `json:"debtDate" bson:"debtDate"`
-	InclusionDate    time.Time `json:"inclusionDate" bson:"inclusionDate"`
+	DebtDate         time.Time `json:"debtDate,omitempty" bson:"debtDate,omitempty"`
+	InclusionDate    time.Time `json:"inclusionDate,omitempty" bson:"inclusionDate,omitempty"`
 }

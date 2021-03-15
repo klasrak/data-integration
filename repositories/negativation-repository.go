@@ -2,17 +2,19 @@ package repositories
 
 import (
 	"context"
+	"time"
 
 	di "github.com/klasrak/data-integration"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type NegativationRepository interface {
 	InsertOne(n di.Negativation) error
 	InsertMany(n []di.Negativation) error
-	Update(n di.Negativation) error
+	Update(n, newN di.Negativation) error
 	Delete(customerDocument string) error
 
 	GetOne(customerDocument string) (di.Negativation, error)
@@ -26,6 +28,16 @@ type negativationRepository struct {
 func NewNegativationRepository(client *mongo.Client) NegativationRepository {
 	db := client.Database("di_db")
 	collection := db.Collection("negativations")
+
+	mod := mongo.IndexModel{
+		Keys: bson.M{
+			"contract": 1,
+		}, Options: options.Index().SetUnique(true),
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	collection.Indexes().CreateOne(ctx, mod)
 
 	return &negativationRepository{
 		collection: *collection,
@@ -65,8 +77,8 @@ func (nr *negativationRepository) InsertMany(nList []di.Negativation) error {
 	return nil
 }
 
-func (nr *negativationRepository) Update(n di.Negativation) error {
-	nByte, err := bson.Marshal(n)
+func (nr *negativationRepository) Update(n, newN di.Negativation) error {
+	nByte, err := bson.Marshal(newN)
 
 	if err != nil {
 		return err
@@ -81,10 +93,10 @@ func (nr *negativationRepository) Update(n di.Negativation) error {
 
 	filter := bson.D{primitive.E{Key: "customerDocument", Value: n.CustomerDocument}}
 
-	_, err = nr.collection.UpdateOne(context.TODO(), filter, bson.D{{Key: "$set", Value: update}})
+	result := nr.collection.FindOneAndUpdate(context.TODO(), filter, bson.D{{Key: "$set", Value: update}})
 
-	if err != nil {
-		return err
+	if result.Err() == mongo.ErrNoDocuments {
+		return result.Err()
 	}
 
 	return nil

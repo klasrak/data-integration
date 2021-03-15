@@ -42,6 +42,7 @@ func main() {
 			v1.GET("/get", negativationHandler.GetAll)
 			v1.GET("/get/:customerDocument", negativationHandler.Get)
 			v1.POST("/create", negativationHandler.Create)
+			v1.PUT("/update/:customerDocument", negativationHandler.Update)
 		}
 	}
 

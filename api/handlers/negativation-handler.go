@@ -86,7 +86,7 @@ func (n *negativationHandler) Get(c *gin.Context) {
 		return
 	}
 
-	result, err := n.repo.GetOne(c.Param("customerDocument"))
+	result, err := n.repo.GetOne(customerDocument)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -116,25 +116,54 @@ func (n *negativationHandler) Create(c *gin.Context) {
 		panic(err.Error())
 	}
 
-	result, _ := n.repo.GetOne(negativation.CustomerDocument)
+	err = n.repo.InsertOne(negativation)
 
-	if result.ID == "" {
-		err = n.repo.InsertOne(negativation)
-
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "internal server error",
-			})
-			return
-		}
-
-		c.JSON(http.StatusCreated, gin.H{
-			"data": negativation,
+	if mongo.IsDuplicateKeyError(err) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "negativation already exists",
 		})
 		return
 	}
 
-	c.JSON(http.StatusBadRequest, gin.H{
-		"error": "negativation already exists",
+	c.JSON(http.StatusCreated, gin.H{
+		"data": negativation,
+	})
+}
+
+func (n *negativationHandler) Update(c *gin.Context) {
+	customerDocument := c.Param("customerDocument")
+	var update = di.Negativation{}
+
+	c.Bind(&update)
+
+	if customerDocument == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid customer document",
+		})
+		return
+	}
+
+	result, _ := n.repo.GetOne(customerDocument)
+
+	if result.ID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "negativation do not exists",
+		})
+		return
+	}
+
+	err := n.repo.Update(result, update)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error",
+		})
+		return
+	}
+
+	result, _ = n.repo.GetOne(update.CustomerDocument)
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
 	})
 }
