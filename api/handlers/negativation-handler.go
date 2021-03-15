@@ -106,3 +106,35 @@ func (n *negativationHandler) Get(c *gin.Context) {
 		"data": result,
 	})
 }
+
+func (n *negativationHandler) Create(c *gin.Context) {
+	var negativation = di.Negativation{}
+
+	err := c.Bind(&negativation)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	result, _ := n.repo.GetOne(negativation.CustomerDocument)
+
+	if result.ID == "" {
+		err = n.repo.InsertOne(negativation)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "internal server error",
+			})
+			return
+		}
+
+		c.JSON(http.StatusCreated, gin.H{
+			"data": negativation,
+		})
+		return
+	}
+
+	c.JSON(http.StatusBadRequest, gin.H{
+		"error": "negativation already exists",
+	})
+}

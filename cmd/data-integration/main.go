@@ -41,6 +41,7 @@ func main() {
 			v1.GET("/fetch", negativationHandler.Fetch)
 			v1.GET("/get", negativationHandler.GetAll)
 			v1.GET("/get/:customerDocument", negativationHandler.Get)
+			v1.POST("/create", negativationHandler.Create)
 		}
 	}
 
