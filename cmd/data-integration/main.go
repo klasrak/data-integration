@@ -24,7 +24,7 @@ func main() {
 	}
 
 	negativationRepository := repositories.NewNegativationRepository(mongoClient)
-	negativationHandler := handlers.NewNegativationHandler(&negativationRepository)
+	negativationHandler := handlers.NewNegativationHandler(negativationRepository)
 
 	router := gin.Default()
 
@@ -39,6 +39,8 @@ func main() {
 		v1 := api.Group("/v1")
 		{
 			v1.GET("/fetch", negativationHandler.Fetch)
+			v1.GET("/get", negativationHandler.GetAll)
+			v1.GET("/get/:customerDocument", negativationHandler.Get)
 		}
 	}
 

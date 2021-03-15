@@ -2,22 +2,22 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	di "github.com/klasrak/data-integration"
 	rep "github.com/klasrak/data-integration/repositories"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type negativationHandler struct {
-	repository *rep.NegativationRepository
+	repo rep.NegativationRepository
 }
 
-func NewNegativationHandler(r *rep.NegativationRepository) *negativationHandler {
+func NewNegativationHandler(r rep.NegativationRepository) *negativationHandler {
 	return &negativationHandler{
-		repository: r,
+		repo: r,
 	}
 }
 
@@ -47,9 +47,61 @@ func (n *negativationHandler) Fetch(c *gin.Context) {
 
 	json.Unmarshal(body, &results)
 
-	fmt.Println(results)
+	err = n.repo.InsertMany(results)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to fetch legacy API data",
+		})
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": results,
+	})
+}
+
+func (n *negativationHandler) GetAll(c *gin.Context) {
+	result, err := n.repo.GetAll()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
+	})
+}
+
+func (n *negativationHandler) Get(c *gin.Context) {
+	customerDocument := c.Param("customerDocument")
+
+	if customerDocument == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid customer document",
+		})
+		return
+	}
+
+	result, err := n.repo.GetOne(c.Param("customerDocument"))
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "Negativation not found",
+			})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "internal server error",
+			})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
 	})
 }
