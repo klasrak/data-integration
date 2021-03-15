@@ -14,7 +14,7 @@ import (
 type NegativationRepository interface {
 	InsertOne(n di.Negativation) error
 	InsertMany(n []di.Negativation) error
-	Update(n, newN di.Negativation) error
+	Update(id string, n di.Negativation) error
 	Delete(customerDocument string) error
 
 	GetOne(customerDocument string) ([]di.Negativation, error)
@@ -71,8 +71,8 @@ func (nr *negativationRepository) InsertMany(nList []di.Negativation) error {
 	return nil
 }
 
-func (nr *negativationRepository) Update(n, newN di.Negativation) error {
-	nByte, err := bson.Marshal(newN)
+func (nr *negativationRepository) Update(id string, n di.Negativation) error {
+	nByte, err := bson.Marshal(n)
 
 	if err != nil {
 		return err
@@ -85,12 +85,18 @@ func (nr *negativationRepository) Update(n, newN di.Negativation) error {
 		return err
 	}
 
-	filter := bson.D{primitive.E{Key: "customerDocument", Value: n.CustomerDocument}}
+	objectId, err := primitive.ObjectIDFromHex(id)
 
-	result := nr.collection.FindOneAndUpdate(context.TODO(), filter, bson.D{{Key: "$set", Value: update}})
+	if err != nil {
+		return err
+	}
 
-	if result.Err() == mongo.ErrNoDocuments {
-		return result.Err()
+	filter := bson.D{primitive.E{Key: "_id", Value: objectId}}
+
+	_, err = nr.collection.UpdateOne(context.TODO(), filter, bson.M{"$set": update})
+
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -167,9 +167,7 @@ func (n *negativationHandler) Update(c *gin.Context) {
 		return
 	}
 
-	result, _ := n.repo.GetByID(id)
-
-	err := n.repo.Update(result, update)
+	err := n.repo.Update(id, update)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
