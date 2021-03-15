@@ -46,7 +46,14 @@ func (nr *negativationRepository) InsertMany(nList []di.Negativation) error {
 	insertableList := make([]interface{}, len(nList))
 
 	for i, v := range nList {
-		insertableList[i] = v
+		r, _ := nr.GetOne(v.CustomerDocument)
+		if r.ID == "" {
+			insertableList[i] = v
+		}
+	}
+
+	if insertableList[0] == nil {
+		return nil
 	}
 
 	_, err := nr.collection.InsertMany(context.TODO(), insertableList)

@@ -53,6 +53,7 @@ func (n *negativationHandler) Fetch(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to fetch legacy API data",
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
