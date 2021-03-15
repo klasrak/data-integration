@@ -23,7 +23,7 @@ func NewNegativationHandler(r rep.NegativationRepository) *negativationHandler {
 
 func (n *negativationHandler) Fetch(c *gin.Context) {
 	client := http.Client{}
-	legacyApiUrl := "http://localhost:3333/negativations"
+	legacyApiUrl := "http://api-legacy:3333/negativations"
 
 	request, err := http.NewRequest(http.MethodGet, legacyApiUrl, nil)
 
