@@ -41,3 +41,7 @@ func (u *usersHandler) FindByEmail(c *gin.Context) {
 		"data": user,
 	})
 }
+
+func (u *usersHandler) Find(c *gin.Context) {
+	result, err := u.repo.FindAll()
+}

@@ -10,6 +10,7 @@ import (
 
 type UsersRepository interface {
 	FindByEmail(email string) (di.User, error)
+	FindAll() ([]di.User, error)
 }
 
 type usersRepository struct {
@@ -37,4 +38,34 @@ func (u *usersRepository) FindByEmail(email string) (di.User, error) {
 	}
 
 	return user, nil
+}
+
+func (u *usersRepository) FindAll() ([]di.User, error) {
+	filter := bson.D{{}}
+	results := []di.User{}
+
+	cur, err := u.collection.Find(context.TODO(), filter)
+
+	if err != nil {
+		return results, err
+	}
+
+	for cur.Next(context.TODO()) {
+		t := di.User{}
+		err := cur.Decode(&t)
+
+		if err != nil {
+			return results, err
+		}
+
+		results = append(results, t)
+	}
+
+	cur.Close(context.TODO())
+
+	if len(results) == 0 {
+		return results, mongo.ErrNoDocuments
+	}
+
+	return results, nil
 }

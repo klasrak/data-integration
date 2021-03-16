@@ -30,6 +30,7 @@ func main() {
 	negativationHandler := handlers.NewNegativationHandler(negativationRepository)
 
 	usersRepository := repositories.NewUsersRepository(mongoClient)
+	usersHandler := handlers.NewUsersHandler(usersRepository)
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
