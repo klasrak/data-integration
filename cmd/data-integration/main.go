@@ -42,6 +42,7 @@ func main() {
 	{
 		v1 := api.Group("/v1")
 		{
+			routes.UsersRouter(v1, usersHandler)
 			routes.NegativationRoutes(v1, negativationHandler)
 		}
 	}

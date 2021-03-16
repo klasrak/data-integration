@@ -8,7 +8,7 @@ import (
 func UsersRouter(router *gin.RouterGroup, h handlers.UserHandler) {
 	group := router.Group("/users")
 	{
-		group.GET("/get")
+		group.GET("/get", h.Find)
 		group.GET("/get/:email", h.FindByEmail)
 	}
 }

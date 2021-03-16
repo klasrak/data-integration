@@ -14,4 +14,5 @@ type Handler interface {
 
 type UserHandler interface {
 	FindByEmail(c *gin.Context)
+	Find(c *gin.Context)
 }

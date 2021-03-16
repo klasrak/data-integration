@@ -44,4 +44,15 @@ func (u *usersHandler) FindByEmail(c *gin.Context) {
 
 func (u *usersHandler) Find(c *gin.Context) {
 	result, err := u.repo.FindAll()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": result,
+	})
 }
