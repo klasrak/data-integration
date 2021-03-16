@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	di "github.com/klasrak/data-integration"
 	rep "github.com/klasrak/data-integration/repositories"
+	"github.com/klasrak/data-integration/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -156,9 +157,19 @@ func (n *negativationHandler) Create(c *gin.Context) {
 
 func (n *negativationHandler) Update(c *gin.Context) {
 	id := c.Param("id")
-	var update = di.Negativation{}
+	var update = make(map[string]interface{})
 
-	c.Bind(&update)
+	err := c.Bind(&update)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	data, err := utils.ToDoc(update)
+
+	if err != nil {
+		panic(err.Error())
+	}
 
 	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -167,7 +178,7 @@ func (n *negativationHandler) Update(c *gin.Context) {
 		return
 	}
 
-	err := n.repo.Update(id, update)
+	err = n.repo.Update(id, data)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

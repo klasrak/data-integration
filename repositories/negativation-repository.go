@@ -14,7 +14,7 @@ import (
 type NegativationRepository interface {
 	InsertOne(n di.Negativation) error
 	InsertMany(n []di.Negativation) error
-	Update(id string, n di.Negativation) error
+	Update(id string, n *bson.M) error
 	Delete(customerDocument string) error
 
 	GetOne(customerDocument string) ([]di.Negativation, error)
@@ -71,32 +71,28 @@ func (nr *negativationRepository) InsertMany(nList []di.Negativation) error {
 	return nil
 }
 
-func (nr *negativationRepository) Update(id string, n di.Negativation) error {
-	nByte, err := bson.Marshal(n)
+func (nr *negativationRepository) Update(id string, n *bson.M) error {
+	documentId, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
-		return err
+		panic(err.Error())
 	}
 
-	var update bson.M
-	err = bson.Unmarshal(nByte, &update)
+	filter := bson.M{"_id": documentId}
 
-	if err != nil {
-		return err
+	update := bson.M{"$set": &n}
+
+	upsert := true
+	after := options.After
+	opt := options.FindOneAndUpdateOptions{
+		ReturnDocument: &after,
+		Upsert:         &upsert,
 	}
 
-	objectId, err := primitive.ObjectIDFromHex(id)
+	result := nr.collection.FindOneAndUpdate(context.TODO(), filter, update, &opt)
 
-	if err != nil {
-		return err
-	}
-
-	filter := bson.D{primitive.E{Key: "_id", Value: objectId}}
-
-	_, err = nr.collection.UpdateOne(context.TODO(), filter, bson.M{"$set": update})
-
-	if err != nil {
-		return err
+	if result.Err() != nil {
+		return result.Err()
 	}
 
 	return nil
