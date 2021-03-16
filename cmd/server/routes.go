@@ -11,6 +11,9 @@ import (
 
 func (s *Server) InitRoutes() {
 
+	usersRepository := rp.NewUsersRepository(s.MongoClient)
+	negativationRepository := rp.NewNegativationRepository(s.MongoClient)
+
 	s.Router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Hello, World",
@@ -21,8 +24,9 @@ func (s *Server) InitRoutes() {
 	{
 		v1 := api.Group("v1/")
 		{
-			routes.UsersRouter(v1, handlers.NewUsersHandler(rp.NewUsersRepository(s.MongoClient)))
-			routes.NegativationRoutes(v1, handlers.NewNegativationHandler(rp.NewNegativationRepository(s.MongoClient)))
+			routes.AuthRoutes(v1, handlers.NewAuthHandler(usersRepository, s.Env.JWT_SECRET))
+			routes.UsersRouter(v1, handlers.NewUsersHandler(usersRepository))
+			routes.NegativationRoutes(v1, handlers.NewNegativationHandler(negativationRepository))
 		}
 	}
 }
