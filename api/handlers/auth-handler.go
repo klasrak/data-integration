@@ -5,17 +5,22 @@ import (
 
 	"github.com/gin-gonic/gin"
 	di "github.com/klasrak/data-integration"
+	"github.com/klasrak/data-integration/jwt"
 	rep "github.com/klasrak/data-integration/repositories"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+var tokenManager = jwt.TokenManager{}
+
 type authHandler struct {
-	r rep.UsersRepository
+	r         rep.UsersRepository
+	jwtSecret string
 }
 
-func NewAuthHandler(r rep.UsersRepository) *authHandler {
+func NewAuthHandler(r rep.UsersRepository, jwtSecret string) *authHandler {
 	return &authHandler{
-		r: r,
+		r:         r,
+		jwtSecret: jwtSecret,
 	}
 }
 
@@ -45,16 +50,25 @@ func (auth *authHandler) Login(c *gin.Context) {
 		}
 	}
 
-	if u.Password != user.Password {
+	if user.Email != u.Email || user.Password != u.Password {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "invalid credentials",
 		})
 		return
 	}
 
+	ts, err := tokenManager.CreateToken(user.ID, user.Email, auth.jwtSecret)
+
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	tokens := map[string]string{
-		"accessToken":  "validAccessToken",
-		"refreshToken": "validRefreshToken",
+		"accessToken":  ts.AccessToken,
+		"refreshToken": ts.RefreshToken,
 	}
 
 	c.JSON(http.StatusOK, gin.H{
