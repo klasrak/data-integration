@@ -66,10 +66,17 @@ func (n *negativationHandler) GetAll(c *gin.Context) {
 	result, err := n.repo.GetAll()
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
-		})
-		return
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "no negativations registered so far",
+			})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "internal server error",
+			})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{
