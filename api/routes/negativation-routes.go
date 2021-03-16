@@ -5,8 +5,9 @@ import (
 	"github.com/klasrak/data-integration/api/handlers"
 )
 
-func NegativationRoutes(router *gin.RouterGroup, h handlers.Handler) {
+func NegativationRoutes(router *gin.RouterGroup, middleware gin.HandlerFunc, h handlers.Handler) {
 	group := router.Group("/negativations")
+	group.Use(middleware)
 	{
 		group.GET("/fetch", h.Fetch)
 		group.GET("/get", h.GetAll)
