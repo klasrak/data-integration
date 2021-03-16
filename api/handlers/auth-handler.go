@@ -60,5 +60,23 @@ func (auth *authHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": tokens,
 	})
+}
 
+func (auth *authHandler) Logout(c *gin.Context) {
+	// TODO: delete token from redis (or another) store
+	c.JSON(http.StatusOK, gin.H{
+		"data": "successfully logged out",
+	})
+}
+
+func (auth *authHandler) Refresh(c *gin.Context) {
+	// TODO: create refresh token logic
+	tokens := map[string]string{
+		"accessToken":  "validAccessToken",
+		"refreshToken": "validRefreshToken",
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"data": tokens,
+	})
 }

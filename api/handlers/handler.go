@@ -19,4 +19,6 @@ type UserHandler interface {
 
 type AuthHandler interface {
 	Login(c *gin.Context)
+	Logout(c *gin.Context)
+	Refresh(c *gin.Context)
 }
