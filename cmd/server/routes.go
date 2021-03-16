@@ -1,13 +1,13 @@
 package server
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
 	"github.com/klasrak/data-integration/api/handlers"
 	"github.com/klasrak/data-integration/api/middlewares"
 	"github.com/klasrak/data-integration/api/routes"
 	rp "github.com/klasrak/data-integration/repositories"
+
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 func (s *Server) InitRoutes() {
@@ -16,12 +16,6 @@ func (s *Server) InitRoutes() {
 
 	usersRepository := rp.NewUsersRepository(s.MongoClient)
 	negativationRepository := rp.NewNegativationRepository(s.MongoClient)
-
-	s.Router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello, World",
-		})
-	})
 
 	api := s.Router.Group("/api")
 	{
@@ -32,4 +26,6 @@ func (s *Server) InitRoutes() {
 			routes.NegativationRoutes(v1, jwtMiddleware, handlers.NewNegativationHandler(negativationRepository))
 		}
 	}
+
+	s.Router.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
