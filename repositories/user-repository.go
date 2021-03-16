@@ -2,10 +2,12 @@ package repositories
 
 import (
 	"context"
+	"time"
 
 	di "github.com/klasrak/data-integration"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UsersRepository interface {
@@ -20,6 +22,16 @@ type usersRepository struct {
 func NewUsersRepository(client *mongo.Client) UsersRepository {
 	db := client.Database("di_db")
 	collection := db.Collection("users")
+
+	mod := mongo.IndexModel{
+		Keys: bson.M{
+			"email": 1,
+		}, Options: options.Index().SetUnique(true),
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	collection.Indexes().CreateOne(ctx, mod)
 
 	return &usersRepository{
 		collection: *collection,

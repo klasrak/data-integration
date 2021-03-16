@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -35,6 +36,14 @@ func GetClient(uri string) (*mongo.Client, error) {
 		log.Fatal("Couldn't connect to the database", err)
 	} else {
 		log.Println("Connected!")
+	}
+
+	firstUser := bson.M{"email": "admin@mail.com", "password": "abcd1234"}
+
+	_, err = client.Database("di_db").Collection("users").InsertOne(context.TODO(), firstUser)
+
+	if err != nil {
+		panic(err.Error())
 	}
 
 	return client, err
