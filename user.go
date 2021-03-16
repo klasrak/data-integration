@@ -6,3 +6,16 @@ type User struct {
 	Email    string `json:"email" bson:"email"`
 	Password string `json:"password" bson:"password"`
 }
+
+// InvalidPassword returns true if the given password does not match the hash.
+func (u *User) InvalidPassword(password string) bool {
+	if password == "" {
+		return true
+	}
+
+	if u.Password != password {
+		return true
+	}
+
+	return false
+}

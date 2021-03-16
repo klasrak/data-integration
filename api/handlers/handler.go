@@ -16,3 +16,7 @@ type UserHandler interface {
 	FindByEmail(c *gin.Context)
 	Find(c *gin.Context)
 }
+
+type AuthHandler interface {
+	Login(c *gin.Context)
+}
