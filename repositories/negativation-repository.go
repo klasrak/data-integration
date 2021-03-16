@@ -14,7 +14,7 @@ import (
 type NegativationRepository interface {
 	InsertOne(n di.Negativation) error
 	InsertMany(n []di.Negativation) error
-	Update(id string, n *bson.M) error
+	Update(id string, n *bson.M) (di.Negativation, error)
 	Delete(customerDocument string) error
 
 	GetOne(customerDocument string) ([]di.Negativation, error)
@@ -71,7 +71,7 @@ func (nr *negativationRepository) InsertMany(nList []di.Negativation) error {
 	return nil
 }
 
-func (nr *negativationRepository) Update(id string, n *bson.M) error {
+func (nr *negativationRepository) Update(id string, n *bson.M) (di.Negativation, error) {
 	documentId, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
@@ -92,10 +92,17 @@ func (nr *negativationRepository) Update(id string, n *bson.M) error {
 	result := nr.collection.FindOneAndUpdate(context.TODO(), filter, update, &opt)
 
 	if result.Err() != nil {
-		return result.Err()
+		return di.Negativation{}, result.Err()
 	}
 
-	return nil
+	updated := di.Negativation{}
+	err = result.Decode(&updated)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return updated, nil
 }
 
 func (nr *negativationRepository) Delete(id string) error {

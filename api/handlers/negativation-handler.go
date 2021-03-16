@@ -178,7 +178,7 @@ func (n *negativationHandler) Update(c *gin.Context) {
 		return
 	}
 
-	err = n.repo.Update(id, data)
+	result, err := n.repo.Update(id, data)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -188,7 +188,7 @@ func (n *negativationHandler) Update(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": update,
+		"data": result,
 	})
 }
 
