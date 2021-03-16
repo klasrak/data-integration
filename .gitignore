@@ -160,8 +160,8 @@ temp/
 .ionide
 
 ### vscode ###
-!.vscode/settings.json
-!.vscode/extensions.json
+.vscode/settings.json
+.vscode/extensions.json
 
 ### mongodb volume
 .dbcache
