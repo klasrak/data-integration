@@ -1,14 +1,18 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "API to fetch data from a legacy API, save on mongoDB and return data.",
+        "title": "Data Integration API",
+        "contact": {
+            "name": "Danilo Augusto",
+            "url": "https://daniloaugusto.dev",
+            "email": "dasfcm@gmail.com"
+        },
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0"
     },
-    "paths": {},
-    "securityDefinitions": {
-        "bearerAuth": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
-        }
-    }
+    "basePath": "/api/v1",
+    "paths": {}
 }

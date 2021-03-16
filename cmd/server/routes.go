@@ -27,5 +27,7 @@ func (s *Server) InitRoutes() {
 		}
 	}
 
-	s.Router.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
+
+	s.Router.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 }

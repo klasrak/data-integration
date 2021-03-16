@@ -1,9 +1,13 @@
+basePath: /api/v1
 info:
-  contact: {}
+  contact:
+    email: dasfcm@gmail.com
+    name: Danilo Augusto
+    url: https://daniloaugusto.dev
+  description: API to fetch data from a legacy API, save on mongoDB and return data.
+  license:
+    name: MIT
+  title: Data Integration API
+  version: "1.0"
 paths: {}
-securityDefinitions:
-  bearerAuth:
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"
