@@ -11,3 +11,7 @@ type Handler interface {
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
 }
+
+type UserHandler interface {
+	FindByEmail(c *gin.Context)
+}

@@ -29,6 +29,8 @@ func main() {
 	negativationRepository := repositories.NewNegativationRepository(mongoClient)
 	negativationHandler := handlers.NewNegativationHandler(negativationRepository)
 
+	usersRepository := repositories.NewUsersRepository(mongoClient)
+
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Hello, World",
