@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-type env struct {
+type Env struct {
 	MONGO_URI      string
 	JWT_SECRET     string
 	ENCRYPT_SECRET string
@@ -21,12 +21,12 @@ func getEnvOrDefault(key, defaultValue string) string {
 }
 
 // New creates a new env with environment variables from a .env or with default values
-func New() *env {
+func New() *Env {
 	mongoUri := getEnvOrDefault("MONGO_URI", "mongodb://mongo:27017")
 	jwtSecret := getEnvOrDefault("JWT_SECRET", "s3cr3ts4uc3")
 	encryptSecret := getEnvOrDefault("ENCRYPT_SECRET", "sup3rs3cr3t")
 
-	return &env{
+	return &Env{
 		MONGO_URI:      mongoUri,
 		JWT_SECRET:     jwtSecret,
 		ENCRYPT_SECRET: encryptSecret,
