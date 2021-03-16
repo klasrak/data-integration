@@ -24,6 +24,18 @@ func NewAuthHandler(r rep.UsersRepository, jwtSecret string) *authHandler {
 	}
 }
 
+// Paths Information
+
+// Login godoc
+// @Summary Provides a JSON Web Token
+// @Description Authenticates a user and provides a JWT to Authorize API calls
+// @ID Login
+// @Consume application/json
+// @Produce json
+// @Param body di.User "Login"
+// @Success 200 {object} dto.JWT
+// @Failure 401 {object} dto.Response
+// @Router /auth/login [post]
 func (auth *authHandler) Login(c *gin.Context) {
 	var u di.User
 
@@ -71,16 +83,12 @@ func (auth *authHandler) Login(c *gin.Context) {
 		"refreshToken": ts.RefreshToken,
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": tokens,
-	})
+	c.JSON(http.StatusOK, tokens)
 }
 
 func (auth *authHandler) Logout(c *gin.Context) {
 	// TODO: delete token from redis (or another) store
-	c.JSON(http.StatusOK, gin.H{
-		"data": "successfully logged out",
-	})
+	c.JSON(http.StatusOK, "successfully logged out")
 }
 
 func (auth *authHandler) Refresh(c *gin.Context) {
@@ -90,7 +98,5 @@ func (auth *authHandler) Refresh(c *gin.Context) {
 		"refreshToken": "validRefreshToken",
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"data": tokens,
-	})
+	c.JSON(http.StatusCreated, tokens)
 }

@@ -37,9 +37,7 @@ func (u *usersHandler) FindByEmail(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": user,
-	})
+	c.JSON(http.StatusOK, user)
 }
 
 func (u *usersHandler) Find(c *gin.Context) {
@@ -52,7 +50,5 @@ func (u *usersHandler) Find(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": result,
-	})
+	c.JSON(http.StatusOK, result)
 }

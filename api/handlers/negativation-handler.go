@@ -57,9 +57,7 @@ func (n *negativationHandler) Fetch(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": results,
-	})
+	c.JSON(http.StatusOK, results)
 }
 
 func (n *negativationHandler) GetAll(c *gin.Context) {
@@ -79,9 +77,7 @@ func (n *negativationHandler) GetAll(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": result,
-	})
+	c.JSON(http.StatusOK, result)
 }
 
 func (n *negativationHandler) Get(c *gin.Context) {
@@ -110,9 +106,7 @@ func (n *negativationHandler) Get(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": result,
-	})
+	c.JSON(http.StatusOK, result)
 }
 
 func (n *negativationHandler) GetByID(c *gin.Context) {
@@ -122,21 +116,15 @@ func (n *negativationHandler) GetByID(c *gin.Context) {
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": "negativation not found",
-			})
+			c.JSON(http.StatusNotFound, "negativation not found")
 			return
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "internal server error",
-			})
+			c.JSON(http.StatusInternalServerError, "internal server error")
 			return
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": result,
-	})
+	c.JSON(http.StatusOK, result)
 }
 
 func (n *negativationHandler) Create(c *gin.Context) {
@@ -157,9 +145,7 @@ func (n *negativationHandler) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"data": negativation,
-	})
+	c.JSON(http.StatusCreated, negativation)
 }
 
 func (n *negativationHandler) Update(c *gin.Context) {
@@ -194,9 +180,7 @@ func (n *negativationHandler) Update(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": result,
-	})
+	c.JSON(http.StatusOK, result)
 }
 
 func (n *negativationHandler) Delete(c *gin.Context) {

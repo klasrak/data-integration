@@ -40,10 +40,14 @@ func GetClient(uri string) (*mongo.Client, error) {
 
 	firstUser := bson.M{"email": "admin@mail.com", "password": "abcd1234"}
 
-	_, err = client.Database("di_db").Collection("users").InsertOne(context.TODO(), firstUser)
+	user := client.Database("di_db").Collection("users").FindOne(context.TODO(), firstUser)
 
-	if err != nil {
-		panic(err.Error())
+	if user.Err() == mongo.ErrNoDocuments {
+		_, err = client.Database("di_db").Collection("users").InsertOne(context.TODO(), firstUser)
+
+		if err != nil {
+			panic(err.Error())
+		}
 	}
 
 	return client, err
