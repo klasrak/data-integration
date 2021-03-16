@@ -22,7 +22,7 @@ func getEnvOrDefault(key, defaultValue string) string {
 
 // New creates a new env with environment variables from a .env or with default values
 func New() *env {
-	mongoUri := getEnvOrDefault("MONGO_URI", "mongodb://localhost:27017")
+	mongoUri := getEnvOrDefault("MONGO_URI", "mongodb://mongo:27017")
 	jwtSecret := getEnvOrDefault("JWT_SECRET", "s3cr3ts4uc3")
 	encryptSecret := getEnvOrDefault("ENCRYPT_SECRET", "sup3rs3cr3t")
 

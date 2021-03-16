@@ -38,10 +38,9 @@ services:
       - .:/usr/src/data-integration
     depends_on:
       - mongo
+      - legacy-api
     networks:
       - backend
-    links: 
-      - mongo
     command: go run cmd/data-integration/main.go
 
 networks:
