@@ -42,7 +42,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/data_integration.User"
+                            "$ref": "#/definitions/helpers.Login"
                         }
                     }
                 ],
@@ -53,8 +53,8 @@ var doc = `{
                             "$ref": "#/definitions/helpers.Tokens"
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/helpers.HTTPError"
                         }
@@ -80,7 +80,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/data_integration.Negativation"
+                            "$ref": "#/definitions/helpers.Negativation"
                         }
                     }
                 ],
@@ -153,7 +153,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/data_integration.Negativation"
+                                "$ref": "#/definitions/helpers.Negativation"
                             }
                         }
                     },
@@ -281,7 +281,7 @@ var doc = `{
             }
         },
         "/negativations/update/{id}": {
-            "patch": {
+            "put": {
                 "description": "Update negativation",
                 "consumes": [
                     "application/json"
@@ -298,6 +298,15 @@ var doc = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Data to update",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Negativation"
+                        }
                     }
                 ],
                 "responses": {
@@ -353,20 +362,6 @@ var doc = `{
                 }
             }
         },
-        "data_integration.User": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
         "helpers.HTTPError": {
             "type": "object",
             "properties": {
@@ -375,6 +370,43 @@ var doc = `{
                 },
                 "statusCode": {
                     "type": "integer"
+                }
+            }
+        },
+        "helpers.Login": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "helpers.Negativation": {
+            "type": "object",
+            "properties": {
+                "companyDocument": {
+                    "type": "string"
+                },
+                "companyName": {
+                    "type": "string"
+                },
+                "contract": {
+                    "type": "string"
+                },
+                "customerDocument": {
+                    "type": "string"
+                },
+                "debtDate": {
+                    "type": "string"
+                },
+                "inclusionDate": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "number"
                 }
             }
         },
@@ -403,12 +435,12 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "",
-	Host:        "",
-	BasePath:    "",
-	Schemes:     []string{},
-	Title:       "",
-	Description: "",
+	Version:     "1.0",
+	Host:        "localhost:8080",
+	BasePath:    "/api/v1",
+	Schemes:     []string{"http"},
+	Title:       "Data Integration API",
+	Description: "Fetch data from a Legacy API and serve",
 }
 
 type s struct{}

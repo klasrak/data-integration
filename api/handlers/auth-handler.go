@@ -34,9 +34,9 @@ func NewAuthHandler(r rep.UsersRepository, jwtSecret string) *authHandler {
 // @ID Login
 // @Accept  json
 // @Produce  json
-// @Param credentials body di.User true "User credentials"
+// @Param credentials body helpers.Login true "User credentials"
 // @Success 200 {object} helpers.Tokens
-// @Failure 401 {object} helpers.HTTPError
+// @Failure 404 {object} helpers.HTTPError
 // @Router /auth/login [post]
 func (auth *authHandler) Login(c *gin.Context) {
 	var u di.User

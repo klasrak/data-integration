@@ -1,20 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is a Rest API to consume from a Legacy API and serve.",
-        "title": "Data Integration API",
-        "contact": {
-            "name": "Danilo Augusto",
-            "url": "https://daniloaugusto.dev",
-            "email": "dasfcm@gmail.com"
-        },
-        "license": {
-            "name": "MIT"
-        },
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "localhost:8080",
-    "basePath": "/api/v1",
     "paths": {
         "/auth/login": {
             "post": {
@@ -34,7 +22,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/data_integration.User"
+                            "$ref": "#/definitions/helpers.Login"
                         }
                     }
                 ],
@@ -45,8 +33,8 @@
                             "$ref": "#/definitions/helpers.Tokens"
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/helpers.HTTPError"
                         }
@@ -72,7 +60,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/data_integration.Negativation"
+                            "$ref": "#/definitions/helpers.Negativation"
                         }
                     }
                 ],
@@ -145,7 +133,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/data_integration.Negativation"
+                                "$ref": "#/definitions/helpers.Negativation"
                             }
                         }
                     },
@@ -273,7 +261,7 @@
             }
         },
         "/negativations/update/{id}": {
-            "patch": {
+            "put": {
                 "description": "Update negativation",
                 "consumes": [
                     "application/json"
@@ -290,6 +278,15 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Data to update",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Negativation"
+                        }
                     }
                 ],
                 "responses": {
@@ -345,20 +342,6 @@
                 }
             }
         },
-        "data_integration.User": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
         "helpers.HTTPError": {
             "type": "object",
             "properties": {
@@ -367,6 +350,43 @@
                 },
                 "statusCode": {
                     "type": "integer"
+                }
+            }
+        },
+        "helpers.Login": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "helpers.Negativation": {
+            "type": "object",
+            "properties": {
+                "companyDocument": {
+                    "type": "string"
+                },
+                "companyName": {
+                    "type": "string"
+                },
+                "contract": {
+                    "type": "string"
+                },
+                "customerDocument": {
+                    "type": "string"
+                },
+                "debtDate": {
+                    "type": "string"
+                },
+                "inclusionDate": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "number"
                 }
             }
         },

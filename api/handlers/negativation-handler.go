@@ -32,7 +32,7 @@ func NewNegativationHandler(r rep.NegativationRepository) *negativationHandler {
 // @ID Fetch
 // @Consume application/json
 // @Produce json
-// @Success 200 {object} []di.Negativation
+// @Success 200 {object} []helpers.Negativation
 // @Failure 400 {object} helpers.HTTPError
 // @Router /negativations/fetch [get]
 func (n *negativationHandler) Fetch(c *gin.Context) {
@@ -163,7 +163,7 @@ func (n *negativationHandler) GetByID(c *gin.Context) {
 // @ID Create
 // @Accept json
 // @Produce json
-// @Param negativation body di.Negativation true "Add negativation"
+// @Param negativation body helpers.Negativation true "Add negativation"
 // @Success 200 {object} di.Negativation
 // @Failure 400 {object} helpers.HTTPError
 // @Failure 500 {object} helpers.HTTPError
@@ -194,10 +194,11 @@ func (n *negativationHandler) Create(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "Negativation ID"
+// @Param data body helpers.Negativation true "Data to update"
 // @Success 200 {object} di.Negativation
 // @Failure 400 {object} helpers.HTTPError
 // @Failure 500 {object} helpers.HTTPError
-// @Router /negativations/update/{id} [patch]
+// @Router /negativations/update/{id} [put]
 func (n *negativationHandler) Update(c *gin.Context) {
 	id := c.Param("id")
 	var update = make(map[string]interface{})

@@ -18,21 +18,36 @@ definitions:
       value:
         type: number
     type: object
-  data_integration.User:
-    properties:
-      email:
-        type: string
-      id:
-        type: string
-      password:
-        type: string
-    type: object
   helpers.HTTPError:
     properties:
       message:
         type: string
       statusCode:
         type: integer
+    type: object
+  helpers.Login:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  helpers.Negativation:
+    properties:
+      companyDocument:
+        type: string
+      companyName:
+        type: string
+      contract:
+        type: string
+      customerDocument:
+        type: string
+      debtDate:
+        type: string
+      inclusionDate:
+        type: string
+      value:
+        type: number
     type: object
   helpers.Tokens:
     properties:
@@ -56,7 +71,7 @@ paths:
         name: credentials
         required: true
         schema:
-          $ref: '#/definitions/data_integration.User'
+          $ref: '#/definitions/helpers.Login'
       produces:
       - application/json
       responses:
@@ -64,8 +79,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/helpers.Tokens'
-        "401":
-          description: Unauthorized
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/helpers.HTTPError'
       summary: Provides a JSON Web Token
@@ -81,7 +96,7 @@ paths:
         name: negativation
         required: true
         schema:
-          $ref: '#/definitions/data_integration.Negativation'
+          $ref: '#/definitions/helpers.Negativation'
       produces:
       - application/json
       responses:
@@ -131,7 +146,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/data_integration.Negativation'
+              $ref: '#/definitions/helpers.Negativation'
             type: array
         "400":
           description: Bad Request
@@ -215,7 +230,7 @@ paths:
             $ref: '#/definitions/helpers.HTTPError'
       summary: Get negativations
   /negativations/update/{id}:
-    patch:
+    put:
       consumes:
       - application/json
       description: Update negativation
@@ -226,6 +241,12 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Data to update
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/helpers.Negativation'
       produces:
       - application/json
       responses:
