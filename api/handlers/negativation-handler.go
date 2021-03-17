@@ -64,7 +64,7 @@ func (n *negativationHandler) Fetch(c *gin.Context) {
 	err = n.repo.InsertMany(results)
 
 	if mongo.IsDuplicateKeyError(err) {
-		helpers.NewError(c, http.StatusBadRequest, errors.New("legacy API data already fetched"))
+		helpers.NewError(c, http.StatusBadRequest, errors.New("legacy API data already fetched and there is no new data to save"))
 		return
 	}
 
