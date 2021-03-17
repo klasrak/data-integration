@@ -214,14 +214,13 @@ func (n *negativationHandler) Update(c *gin.Context) {
 		panic(err.Error())
 	}
 
-	if id == "" {
-		helpers.NewError(c, http.StatusBadRequest, errors.New("invalid id"))
-		return
-	}
-
 	result, err := n.repo.Update(id, data)
 
 	if err != nil {
+		if err.Error() == "invalid id" {
+			helpers.NewError(c, http.StatusBadRequest, errors.New("invalid id"))
+			return
+		}
 		helpers.NewError(c, http.StatusInternalServerError, err)
 		return
 	}

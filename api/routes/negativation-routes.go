@@ -14,7 +14,7 @@ func NegativationRoutes(router *gin.RouterGroup, middleware gin.HandlerFunc, h h
 		group.GET("/get/:customerDocument", h.Get)
 		group.GET("/get-id/:id", h.GetByID)
 		group.POST("/create", h.Create)
-		group.PATCH("/update/:id", h.Update)
+		group.PUT("/update/:id", h.Update)
 		group.DELETE("delete/:id", h.Delete)
 	}
 }

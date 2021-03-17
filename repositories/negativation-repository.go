@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	di "github.com/klasrak/data-integration"
@@ -75,7 +76,7 @@ func (nr *negativationRepository) Update(id string, n *bson.M) (di.Negativation,
 	documentId, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
-		panic(err.Error())
+		return di.Negativation{}, errors.New("invalid id")
 	}
 
 	filter := bson.M{"_id": documentId}
