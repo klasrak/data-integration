@@ -2,7 +2,6 @@
 > Fetch data from a Legacy API and serve a CRUD
 
 
-
 ## Instructions
 - Install [Docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/);
 - In your terminal, run ```docker-compose up```;
@@ -142,6 +141,108 @@ There are mocks for the [repository layer](https://github.com/klasrak/data-integ
 
 To run the tests, simply run the command `go test ./...` at the root of the project.
 
+## How it works
+
+**Folder structure:**
+```sh
+.
+├── api
+│   ├── handlers
+│   │   ├── auth-handler.go
+│   │   ├── handler.go
+│   │   ├── negativation-handler.go
+│   │   ├── negativation-handler_test.go
+│   │   └── users-handler.go
+│   ├── helpers
+│   │   ├── dto.go
+│   │   └── error.go
+│   ├── middlewares
+│   │   └── token.go
+│   └── routes
+│       ├── auth-routes.go
+│       ├── negativation-routes.go
+│       └── users-routes.go
+├── api-legacy
+│   ├── Dockerfile
+│   ├── index.js
+│   ├── negativacoes.json
+│   ├── package.json
+│   └── package-lock.json
+├── auth
+│   └── auth.go
+├── auth.go
+├── cmd
+│   ├── data-integration
+│   │   └── main.go
+│   └── server
+│       ├── routes.go
+│       └── server.go
+├── config
+│   ├── env.go
+│   └── Insomnia_2021-03-17
+├── docker-compose.yml
+├── Dockerfile
+├── docs
+│   ├── docs.go
+│   ├── swagger.json
+│   └── swagger.yaml
+├── go.mod
+├── go.sum
+├── internal
+│   ├── converter
+│   │   └── converter.go
+│   └── cryptography
+│       ├── cryptography.go
+│       └── cryptography_test.go
+├── jwt
+│   └── jwt.go
+├── LICENSE
+├── mocks
+│   ├── auth-repository.go
+│   ├── http.go
+│   ├── negativation-repository.go
+│   └── user-repository.go
+├── mongo
+│   └── mongo.go
+├── negativation.go
+├── README.md
+├── redis
+│   └── redis.go
+├── repositories
+│   ├── auth-repository.go
+│   ├── negativation-repository.go
+│   └── user-repository.go
+├── user.go
+└── utils
+    └── utils.go
+
+```
+
+#### Legacy API
+The endpoint to consume the legacy API is made available through a [json-server](https://www.npmjs.com/package/json-server), in a small [Node](https://nodejs.org/en/) project inside [api-legacy folder](https://github.com/klasrak/data-integration/tree/master/api-legacy).
+
+```js
+const jsonServer = require('json-server')
+const server = jsonServer.create()
+const router = jsonServer.router('negativacoes.json')
+const middlewares = jsonServer.defaults()
+
+server.use(middlewares)
+// CORS
+server.set('access-control-allow-origin', '*');
+server.set('access-control-allow-methods', '*');
+server.set('access-control-allow-headers', '*');
+// -----
+server.use(router)
+
+server.listen(3333, () => {
+    console.log('Server listening...')
+})
+```
+
+#### Docker
+
+All services, APIs, including MongoDB and Redis, are orchestrated using [docker-compose](https://github.com/klasrak/data-integration/blob/master/docker-compose.yml).
 ## TODO list
 - **WRITE MORE TESTS!!!!!**
 - Add a cache layer
