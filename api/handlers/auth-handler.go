@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	di "github.com/klasrak/data-integration"
+	"github.com/klasrak/data-integration/api/helpers"
 	"github.com/klasrak/data-integration/jwt"
 	rep "github.com/klasrak/data-integration/repositories"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -30,19 +32,17 @@ func NewAuthHandler(r rep.UsersRepository, jwtSecret string) *authHandler {
 // @Summary Provides a JSON Web Token
 // @Description Authenticates a user and provides a JWT to Authorize API calls
 // @ID Login
-// @Consume application/json
-// @Produce json
-// @Param body di.User "Login"
-// @Success 200 {object} dto.JWT
-// @Failure 401 {object} dto.Response
+// @Accept  json
+// @Produce  json
+// @Param credentials body di.User true "User credentials"
+// @Success 200 {object} helpers.Tokens
+// @Failure 401 {object} helpers.HTTPError
 // @Router /auth/login [post]
 func (auth *authHandler) Login(c *gin.Context) {
 	var u di.User
 
 	if err := c.Bind(&u); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"error": "invalid body provided",
-		})
+		helpers.NewError(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
@@ -50,37 +50,29 @@ func (auth *authHandler) Login(c *gin.Context) {
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": "user not found",
-			})
+			helpers.NewError(c, http.StatusNotFound, errors.New("user not found"))
 			return
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "internal server error",
-			})
+			helpers.NewError(c, http.StatusInternalServerError, err)
 			return
 		}
 	}
 
 	if user.Email != u.Email || user.Password != u.Password {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "invalid credentials",
-		})
+		helpers.NewError(c, http.StatusUnauthorized, errors.New("unauthorized"))
 		return
 	}
 
 	ts, err := tokenManager.CreateToken(user.ID, user.Email, auth.jwtSecret)
 
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"error": err.Error(),
-		})
+		helpers.NewError(c, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	tokens := map[string]string{
-		"accessToken":  ts.AccessToken,
-		"refreshToken": ts.RefreshToken,
+	tokens := helpers.Tokens{
+		AccessToken:  ts.AccessToken,
+		RefreshToken: ts.RefreshToken,
 	}
 
 	c.JSON(http.StatusOK, tokens)

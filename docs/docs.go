@@ -18,19 +18,378 @@ var doc = `{
     "info": {
         "description": "{{.Description}}",
         "title": "{{.Title}}",
-        "contact": {
-            "name": "Danilo Augusto",
-            "url": "https://daniloaugusto.dev",
-            "email": "dasfcm@gmail.com"
-        },
-        "license": {
-            "name": "MIT"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "Authenticates a user and provides a JWT to Authorize API calls",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Provides a JSON Web Token",
+                "operationId": "Login",
+                "parameters": [
+                    {
+                        "description": "User credentials",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data_integration.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.Tokens"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/negativations/create": {
+            "post": {
+                "description": "Create negativation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Create negativation",
+                "operationId": "Create",
+                "parameters": [
+                    {
+                        "description": "Add negativation",
+                        "name": "negativation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/data_integration.Negativation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data_integration.Negativation"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/negativations/delete/{id}": {
+            "delete": {
+                "description": "Delete negativation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Delete negativation",
+                "operationId": "Delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Negativation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/negativations/fetch": {
+            "get": {
+                "description": "Fetch data from Legacy API and saves into mongodb",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Fetch data from Legacy API",
+                "operationId": "Fetch",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/data_integration.Negativation"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/negativations/get": {
+            "get": {
+                "description": "Get all negativations from database",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get all negativations",
+                "operationId": "GetAll",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/data_integration.Negativation"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/negativations/get/{id}": {
+            "get": {
+                "description": "Get a negativation by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get a negativation by ID",
+                "operationId": "GetByID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Negativation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data_integration.Negativation"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/negativations/get{customerDocument}": {
+            "get": {
+                "description": "Get all negativations from a documentNumber",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get negativations",
+                "operationId": "Get",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Customer document (CPF)",
+                        "name": "customerDocument",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/data_integration.Negativation"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/negativations/update/{id}": {
+            "patch": {
+                "description": "Update negativation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Update negativation",
+                "operationId": "Update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Negativation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/data_integration.Negativation"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helpers.HTTPError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "data_integration.Negativation": {
+            "type": "object",
+            "properties": {
+                "companyDocument": {
+                    "type": "string"
+                },
+                "companyName": {
+                    "type": "string"
+                },
+                "contract": {
+                    "type": "string"
+                },
+                "customerDocument": {
+                    "type": "string"
+                },
+                "debtDate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "inclusionDate": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "number"
+                }
+            }
+        },
+        "data_integration.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "helpers.HTTPError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "statusCode": {
+                    "type": "integer"
+                }
+            }
+        },
+        "helpers.Tokens": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "refreshToken": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }`
 
 type swaggerInfo struct {
@@ -44,12 +403,12 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "1.0",
+	Version:     "",
 	Host:        "",
-	BasePath:    "/api/v1",
+	BasePath:    "",
 	Schemes:     []string{},
-	Title:       "Data Integration API",
-	Description: "API to fetch data from a legacy API, save on mongoDB and return data.",
+	Title:       "",
+	Description: "",
 }
 
 type s struct{}

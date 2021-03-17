@@ -1,13 +1,245 @@
-basePath: /api/v1
+definitions:
+  data_integration.Negativation:
+    properties:
+      companyDocument:
+        type: string
+      companyName:
+        type: string
+      contract:
+        type: string
+      customerDocument:
+        type: string
+      debtDate:
+        type: string
+      id:
+        type: string
+      inclusionDate:
+        type: string
+      value:
+        type: number
+    type: object
+  data_integration.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+    type: object
+  helpers.HTTPError:
+    properties:
+      message:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+  helpers.Tokens:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+    type: object
 info:
-  contact:
-    email: dasfcm@gmail.com
-    name: Danilo Augusto
-    url: https://daniloaugusto.dev
-  description: API to fetch data from a legacy API, save on mongoDB and return data.
-  license:
-    name: MIT
-  title: Data Integration API
-  version: "1.0"
-paths: {}
+  contact: {}
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and provides a JWT to Authorize API calls
+      operationId: Login
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/data_integration.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helpers.Tokens'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+      summary: Provides a JSON Web Token
+  /negativations/create:
+    post:
+      consumes:
+      - application/json
+      description: Create negativation
+      operationId: Create
+      parameters:
+      - description: Add negativation
+        in: body
+        name: negativation
+        required: true
+        schema:
+          $ref: '#/definitions/data_integration.Negativation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data_integration.Negativation'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+      summary: Create negativation
+  /negativations/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete negativation
+      operationId: Delete
+      parameters:
+      - description: Negativation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+      summary: Delete negativation
+  /negativations/fetch:
+    get:
+      description: Fetch data from Legacy API and saves into mongodb
+      operationId: Fetch
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/data_integration.Negativation'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+      summary: Fetch data from Legacy API
+  /negativations/get:
+    get:
+      description: Get all negativations from database
+      operationId: GetAll
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/data_integration.Negativation'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+      summary: Get all negativations
+  /negativations/get/{id}:
+    get:
+      description: Get a negativation by ID
+      operationId: GetByID
+      parameters:
+      - description: Negativation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data_integration.Negativation'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+      summary: Get a negativation by ID
+  /negativations/get{customerDocument}:
+    get:
+      description: Get all negativations from a documentNumber
+      operationId: Get
+      parameters:
+      - description: Customer document (CPF)
+        in: path
+        name: customerDocument
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/data_integration.Negativation'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+      summary: Get negativations
+  /negativations/update/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update negativation
+      operationId: Update
+      parameters:
+      - description: Negativation ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/data_integration.Negativation'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helpers.HTTPError'
+      summary: Update negativation
 swagger: "2.0"

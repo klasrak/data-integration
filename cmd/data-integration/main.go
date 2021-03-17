@@ -8,14 +8,12 @@ import (
 
 // @title Data Integration API
 // @version 1.0
-// @description API to fetch data from a legacy API, save on mongoDB and return data.
-
+// @description This is a Rest API to consume from a Legacy API and serve.
 // @contact.name Danilo Augusto
 // @contact.url https://daniloaugusto.dev
 // @contact.email dasfcm@gmail.com
-
 // @license.name MIT
-
+// @host localhost:8080
 // @BasePath /api/v1
 func main() {
 

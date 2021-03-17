@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	di "github.com/klasrak/data-integration"
+	"github.com/klasrak/data-integration/api/helpers"
 	rep "github.com/klasrak/data-integration/repositories"
 	"github.com/klasrak/data-integration/utils"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,6 +24,17 @@ func NewNegativationHandler(r rep.NegativationRepository) *negativationHandler {
 	}
 }
 
+// Paths Information
+
+// Fetch godoc
+// @Summary Fetch data from Legacy API
+// @Description Fetch data from Legacy API and saves into mongodb
+// @ID Fetch
+// @Consume application/json
+// @Produce json
+// @Success 200 {object} []di.Negativation
+// @Failure 400 {object} helpers.HTTPError
+// @Router /negativations/fetch [get]
 func (n *negativationHandler) Fetch(c *gin.Context) {
 	client := http.Client{}
 	legacyApiUrl := "http://legacy-api:3333/negativations"
@@ -51,28 +64,30 @@ func (n *negativationHandler) Fetch(c *gin.Context) {
 	err = n.repo.InsertMany(results)
 
 	if mongo.IsDuplicateKeyError(err) {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Legacy API data already fetched",
-		})
+		helpers.NewError(c, http.StatusBadRequest, errors.New("legacy API data already fetched"))
 		return
 	}
 
 	c.JSON(http.StatusOK, results)
 }
 
+// GetAll godoc
+// @Summary Get all negativations
+// @Description Get all negativations from database
+// @ID GetAll
+// @Produce  json
+// @Success 200 {object} []di.Negativation
+// @Failure 404 {object} helpers.HTTPError
+// @Router /negativations/get [get]
 func (n *negativationHandler) GetAll(c *gin.Context) {
 	result, err := n.repo.GetAll()
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": "no negativations registered so far",
-			})
+			helpers.NewError(c, http.StatusNotFound, errors.New("no negativations registered so far"))
 			return
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "internal server error",
-			})
+			helpers.NewError(c, http.StatusInternalServerError, err)
 			return
 		}
 	}
@@ -80,13 +95,22 @@ func (n *negativationHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// Get godoc
+// @Summary Get negativations
+// @Description Get all negativations from a documentNumber
+// @ID Get
+// @Produce json
+// @Param customerDocument path string true "Customer document (CPF)"
+// @Success 200 {object} []di.Negativation
+// @Failure 400 {object} helpers.HTTPError
+// @Failure 404 {object} helpers.HTTPError
+// @Failure 500 {object} helpers.HTTPError
+// @Router /negativations/get{customerDocument} [get]
 func (n *negativationHandler) Get(c *gin.Context) {
 	customerDocument := c.Param("customerDocument")
 
 	if customerDocument == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid customer document",
-		})
+		helpers.NewError(c, http.StatusBadRequest, errors.New("invalid document number"))
 		return
 	}
 
@@ -94,14 +118,10 @@ func (n *negativationHandler) Get(c *gin.Context) {
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": "Negativation not found",
-			})
+			helpers.NewError(c, http.StatusNotFound, errors.New("negativation not found"))
 			return
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "internal server error",
-			})
+			helpers.NewError(c, http.StatusInternalServerError, err)
 			return
 		}
 	}
@@ -109,6 +129,16 @@ func (n *negativationHandler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// GetByID godoc
+// @Summary Get a negativation by ID
+// @Description Get a negativation by ID
+// @ID GetByID
+// @Produce json
+// @Param id path string true "Negativation ID"
+// @Success 200 {object} di.Negativation
+// @Failure 404 {object} helpers.HTTPError
+// @Failure 500 {object} helpers.HTTPError
+// @Router /negativations/get/{id} [get]
 func (n *negativationHandler) GetByID(c *gin.Context) {
 	id := c.Param("id")
 
@@ -116,10 +146,10 @@ func (n *negativationHandler) GetByID(c *gin.Context) {
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			c.JSON(http.StatusNotFound, "negativation not found")
+			helpers.NewError(c, http.StatusNotFound, errors.New("negativation not found"))
 			return
 		} else {
-			c.JSON(http.StatusInternalServerError, "internal server error")
+			helpers.NewError(c, http.StatusInternalServerError, err)
 			return
 		}
 	}
@@ -127,6 +157,17 @@ func (n *negativationHandler) GetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// Create godoc
+// @Summary Create negativation
+// @Description Create negativation
+// @ID Create
+// @Accept json
+// @Produce json
+// @Param negativation body di.Negativation true "Add negativation"
+// @Success 200 {object} di.Negativation
+// @Failure 400 {object} helpers.HTTPError
+// @Failure 500 {object} helpers.HTTPError
+// @Router /negativations/create [post]
 func (n *negativationHandler) Create(c *gin.Context) {
 	var negativation = di.Negativation{}
 
@@ -139,15 +180,24 @@ func (n *negativationHandler) Create(c *gin.Context) {
 	err = n.repo.InsertOne(negativation)
 
 	if mongo.IsDuplicateKeyError(err) {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "negativation already exists",
-		})
+		helpers.NewError(c, http.StatusBadRequest, errors.New("negativation already exists"))
 		return
 	}
 
 	c.JSON(http.StatusCreated, negativation)
 }
 
+// Update godoc
+// @Summary Update negativation
+// @Description Update negativation
+// @ID Update
+// @Accept json
+// @Produce json
+// @Param id path int true "Negativation ID"
+// @Success 200 {object} di.Negativation
+// @Failure 400 {object} helpers.HTTPError
+// @Failure 500 {object} helpers.HTTPError
+// @Router /negativations/update/{id} [patch]
 func (n *negativationHandler) Update(c *gin.Context) {
 	id := c.Param("id")
 	var update = make(map[string]interface{})
@@ -165,33 +215,37 @@ func (n *negativationHandler) Update(c *gin.Context) {
 	}
 
 	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid customer document",
-		})
+		helpers.NewError(c, http.StatusBadRequest, errors.New("invalid id"))
 		return
 	}
 
 	result, err := n.repo.Update(id, data)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
-		})
+		helpers.NewError(c, http.StatusInternalServerError, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, result)
 }
 
+// Delete godoc
+// @Summary Delete negativation
+// @Description Delete negativation
+// @ID Delete
+// @Accept json
+// @Produce json
+// @Param id path int true "Negativation ID"
+// @Success 200
+// @Failure 500 {object} helpers.HTTPError
+// @Router /negativations/delete/{id} [delete]
 func (n *negativationHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
 
 	err := n.repo.Delete(id)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
-		})
+		helpers.NewError(c, http.StatusInternalServerError, err)
 		return
 	}
 
