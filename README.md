@@ -150,3 +150,7 @@ To run the tests, simply run the command `go test ./...` at the root of the proj
 ## Purpose of the project
 
 This project was (and will continue to be) developed for the purpose of studies. Any feedback or contribution, positive or not, will be very welcome and will be taken into consideration.
+
+## License
+
+This project follows [MIT License](https://github.com/klasrak/data-integration/blob/master/LICENSE).
