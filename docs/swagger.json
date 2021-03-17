@@ -1,8 +1,20 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "This is a Rest API to consume from a Legacy API and serve.",
+        "title": "Data Integration API",
+        "contact": {
+            "name": "Danilo Augusto",
+            "url": "https://daniloaugusto.dev",
+            "email": "dasfcm@gmail.com"
+        },
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0"
     },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
     "paths": {
         "/auth/login": {
             "post": {
