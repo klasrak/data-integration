@@ -246,7 +246,9 @@ All services, APIs, including MongoDB and Redis, are orchestrated using [docker-
 ## TODO list
 - **WRITE MORE TESTS!!!!!**
 - Add a cache layer
-- Revoge active tokens
+- Encryption before saving data. The [package is ready](https://github.com/klasrak/data-integration/tree/master/internal/cryptography), just integrate with the negativation repository.
+- Logout and revoke active tokens
+- Endpoint to refresh access token with refreshToken
 
 ## Purpose of the project
 
